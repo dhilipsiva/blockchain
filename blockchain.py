@@ -30,6 +30,10 @@ class Transaction(DataClassJsonMixin):
     recipient: str
     amount: float
 
+    @staticmethod
+    def load(data: Dict):  # -> Transaction:
+        return Transaction(**data)
+
 
 @dataclass
 class Block(DataClassJsonMixin):
@@ -45,13 +49,9 @@ class Block(DataClassJsonMixin):
     @staticmethod
     def load(data: Dict):  # -> Block:
         transactions = data.pop('transactions')
-        transactions = [Transaction(**item) for item in transactions]
+        transactions = [Transaction.load(item) for item in transactions]
         data['transactions'] = transactions
         return Block(**data)
-
-    @staticmethod
-    def load_many(items: List[Dict]):  # -> List[Block]:
-        return [Block.load(item) for item in items]
 
 
 def hash(data: str) -> str:
@@ -119,6 +119,10 @@ class Blockchain(object):
         self.unverified_transactions = []
         self.genesis_block()
 
+    @staticmethod
+    def load(items: List[Dict]) -> List[Block]:
+        return [Block.load(item) for item in items]
+
     def register_node(self, address: str):
         '''
         Register a new p2p node, Ex: 0.0.0.0:8001
@@ -173,7 +177,7 @@ class Blockchain(object):
             response = requests.get(f'http://{node}/{CHAIN_ENDPOINT}')
             if response.status_code == 200:
                 chain = response.json()['chain']
-                chain = Block.load_many(chain)
+                chain = Blockchain.load(chain)
                 if len(chain) > len(self.chain) and valid_chain(chain):
                     self.chain = chain
                     replaced = True
