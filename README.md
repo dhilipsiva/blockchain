@@ -1,2 +1,2 @@
 # blockchain
-A simple Blockchain in Python implemented with asyncio
+A simple Blockchain in Python 3.7+ implemented with asyncio
