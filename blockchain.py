@@ -16,7 +16,7 @@ CHAIN_ENDPOINT = 'chain'
 
 
 class DataClassMixin(object):
-    def to_json(self):
+    def to_json(self) -> str:
         return json.dumps(
             self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
@@ -73,7 +73,6 @@ def valid_proof(last_proof: int, proof: int) -> bool:
     '''
     Check if a given proof is valid
     '''
-
     guess = hash(f'{last_proof}{proof}')
     return guess[:4] == "0000"
 
